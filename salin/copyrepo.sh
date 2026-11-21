@@ -1,0 +1,24 @@
+#!/bin/bash
+PROJECT_CONFIG_FILE="${PROJECT_CONFIG_FILE:-/etc/ssh-one/config.env}"
+if [ -r "$PROJECT_CONFIG_FILE" ]; then
+    # shellcheck disable=SC1090
+    . "$PROJECT_CONFIG_FILE"
+fi
+PROJECT_GITHUB_OWNER="${PROJECT_GITHUB_OWNER:-Phechr-2025}"
+PROJECT_GITHUB_REPO="${PROJECT_GITHUB_REPO:-SSH-xone}"
+PROJECT_GITHUB_BRANCH="${PROJECT_GITHUB_BRANCH:-main}"
+PROJECT_RAW_BASE_URL="${PROJECT_RAW_BASE_URL:-https://raw.githubusercontent.com/${PROJECT_GITHUB_OWNER}/${PROJECT_GITHUB_REPO}/${PROJECT_GITHUB_BRANCH}}"
+PROJECT_RAW_HOST="${PROJECT_RAW_BASE_URL#https://}"
+PROJECT_REPOSITORY_URL="${PROJECT_REPOSITORY_URL:-https://github.com/${PROJECT_GITHUB_OWNER}/${PROJECT_GITHUB_REPO}}"
+PROJECT_BRAND="${PROJECT_BRAND:-SSH-one}"
+
+cd
+sudo apt update -y
+apt update -y
+sudo apt install git -y
+apt install git -y
+cd
+cd /root/
+git clone ${PROJECT_REPOSITORY_URL}
+
+cd
