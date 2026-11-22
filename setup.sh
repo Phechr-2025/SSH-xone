@@ -167,7 +167,8 @@ install -m 0600 "$SETUP_ROOT/config.env" "$PROJECT_CONFIG"
 bash "$SETUP_ROOT/update/udp-custom-menu.sh" install
 printf '%s\n' "$(project_version)" > "$PROJECT_VERSION_FILE"
 echo " "
-echo "Installation has been completed!!"echo " "
+echo "Installation has been completed!!"
+echo " "
 echo "============================================================================" | tee -a log-install.txt
 echo "" | tee -a log-install.txt
 echo "----------------------------------------------------------------------------" | tee -a log-install.txt
