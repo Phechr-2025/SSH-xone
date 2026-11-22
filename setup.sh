@@ -128,10 +128,18 @@ rm -f /root/install
 rm -f /root/sl-grpc.sh
 rm -f /root/install-sldns
 rm -f /root/install-ss-plugin.sh
-cat <<EOF> /etc/systemd/system/autosett.service
+# The upstream repository does not always contain ssh/set.sh. Only install and
+# enable autosett when a non-empty script was fetched successfully; never leave
+# a broken oneshot service enabled after a 404.
+SET_SCRIPT_TMP="$(mktemp /etc/set.sh.XXXXXX)"
+if curl -fLsS --retry 2 --connect-timeout 15 "${PROJECT_RAW_URL}/ssh/set.sh" -o "$SET_SCRIPT_TMP" \
+    && [ -s "$SET_SCRIPT_TMP" ]; then
+	install -m 0755 "$SET_SCRIPT_TMP" /etc/set.sh
+	cat <<EOF >/etc/systemd/system/autosett.service
 [Unit]
 Description=autosetting
-Documentation=nekopoi.care
+After=network-online.target
+Wants=network-online.target
 
 [Service]
 Type=oneshot
@@ -141,10 +149,17 @@ RemainAfterExit=yes
 [Install]
 WantedBy=multi-user.target
 EOF
-systemctl daemon-reload
-systemctl enable autosett
-wget -O /etc/set.sh "https://${akbarvpn}/set.sh"
-chmod +x /etc/set.sh
+	systemctl daemon-reload
+	systemctl enable autosett
+else
+	echo "Optional ssh/set.sh was unavailable; autosett was not enabled."
+	if [ ! -s /etc/set.sh ]; then
+		systemctl disable autosett.service >/dev/null 2>&1 || true
+		rm -f /etc/systemd/system/autosett.service
+		systemctl daemon-reload
+	fi
+fi
+rm -f "$SET_SCRIPT_TMP"
 history -c
 # Install UDP Custom through the account-aware VVV-style manager.
 install -d -m 0755 "$PROJECT_CONFIG_DIR"
@@ -206,3 +221,4 @@ echo "   - Installation Log --> /root/log-install.txt"  | tee -a log-install.txt
 echo ""
 echo ""
 echo "Installation complete. Reboot is recommended after reviewing /root/log-install.txt."
+
