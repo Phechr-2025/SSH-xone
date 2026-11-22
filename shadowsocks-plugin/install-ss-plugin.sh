@@ -1,15 +1,23 @@
 #!/bin/bash
-PROJECT_CONFIG_FILE="${PROJECT_CONFIG_FILE:-/etc/ssh-one/config.env}"
-if [ -r "$PROJECT_CONFIG_FILE" ]; then
-    # shellcheck disable=SC1090
-    . "$PROJECT_CONFIG_FILE"
+
+# Load settings from the one installed config file or this source tree.
+if [ -r /etc/ssh-one/config.env ]; then . /etc/ssh-one/config.env
+else
+  _PROJECT_SCRIPT_DIR="$(cd "$(dirname "$0")" 2>/dev/null && pwd)"
+  for _PROJECT_ENV in "$_PROJECT_SCRIPT_DIR/config.env" "$_PROJECT_SCRIPT_DIR/../config.env"; do
+    if [ -r "$_PROJECT_ENV" ]; then . "$_PROJECT_ENV"; break; fi
+  done
 fi
-PROJECT_GITHUB_OWNER="${PROJECT_GITHUB_OWNER:-Phechr-2025}"
-PROJECT_GITHUB_REPO="${PROJECT_GITHUB_REPO:-SSH-xone}"
-PROJECT_GITHUB_BRANCH="${PROJECT_GITHUB_BRANCH:-main}"
-PROJECT_RAW_BASE_URL="${PROJECT_RAW_BASE_URL:-https://raw.githubusercontent.com/${PROJECT_GITHUB_OWNER}/${PROJECT_GITHUB_REPO}/${PROJECT_GITHUB_BRANCH}}"
-PROJECT_RAW_HOST="${PROJECT_RAW_BASE_URL#https://}"
-PROJECT_REPOSITORY_URL="${PROJECT_REPOSITORY_URL:-https://github.com/${PROJECT_GITHUB_OWNER}/${PROJECT_GITHUB_REPO}}"
+PROJECT_OWNER="${PROJECT_GITHUB_OWNER:-Phechr-2025}"
+PROJECT_NAME="${PROJECT_GITHUB_REPO:-SSH-xone}"
+PROJECT_BRANCH="${PROJECT_GITHUB_BRANCH:-main}"
+PROJECT_DISPLAY_NAME="${PROJECT_BRAND:-$PROJECT_OWNER}"
+PROJECT_DOMAIN="${PROJECT_CLOUDFLARE_DOMAIN:-}"
+PROJECT_CF_EMAIL="${PROJECT_CLOUDFLARE_EMAIL:-}"
+PROJECT_CF_KEY="${PROJECT_CLOUDFLARE_API_KEY:-}"
+PROJECT_RAW_URL="${PROJECT_RAW_BASE_URL:-https://raw.githubusercontent.com/${PROJECT_OWNER}/${PROJECT_NAME}/${PROJECT_BRANCH}}"
+export PROJECT_OWNER PROJECT_NAME PROJECT_BRANCH PROJECT_DISPLAY_NAME PROJECT_DOMAIN PROJECT_CF_EMAIL PROJECT_CF_KEY PROJECT_RAW_URL
+# Mod By ${PROJECT_OWNER:-SSH-one}
 # =====================================================
 
 # Color
@@ -27,11 +35,11 @@ mkdir -p /usr/local/bin/
 mkdir -p /etc/shadowsocks
 rm -rf /usr/bin/shadowhost
 cd /usr/bin
-wget -O addss-p "${PROJECT_RAW_BASE_URL}/shadowsocks-plugin/addss-p.sh"
+wget -O addss-p "${PROJECT_RAW_URL}/shadowsocks-plugin/addss-p.sh"
 chmod +x addss-p
-#wget -O shadowhost "${PROJECT_RAW_BASE_URL}/shadowsocks-plugin/shadowhost.sh"
+#wget -O shadowhost "${PROJECT_RAW_URL}/shadowsocks-plugin/shadowhost.sh"
 #chmod +x shadowhost && shadowhost
-wget -O delss "${PROJECT_RAW_BASE_URL}/shadowsocks/delss.sh"
+wget -O delss "${PROJECT_RAW_URL}/shadowsocks/delss.sh"
 cd
 MYIP=$(wget -qO- ipinfo.io/ip);
 clear
@@ -69,9 +77,9 @@ rm -rf xray-plugin
 rm -rf v2xray-plugin
 rm -rf gost-plugin
 cd /usr/bin/
-wget -O gost-plugin "${SHADOWSOCKS_PLUGIN_RAW_BASE_URL}/gost-plugin"
-wget -O v2ray-plugin "${SHADOWSOCKS_PLUGIN_RAW_BASE_URL}/v2ray-plugin"
-wget -O xray-plugin "${SHADOWSOCKS_PLUGIN_RAW_BASE_URL}/xray-plugin"
+wget -O gost-plugin "https://raw.githubusercontent.com/NevermoreSSH/Shadowsocks-Plugin/main/gost-plugin"
+wget -O v2ray-plugin "https://raw.githubusercontent.com/NevermoreSSH/Shadowsocks-Plugin/main/v2ray-plugin"
+wget -O xray-plugin "https://raw.githubusercontent.com/NevermoreSSH/Shadowsocks-Plugin/main/xray-plugin"
 chmod +x gost-plugin
 chmod +x v2ray-plugin
 chmod +x xray-plugin
@@ -99,20 +107,21 @@ chmod +x xray-plugin
 
 # // download
 cd /home/vps/public_html/
-wget -O gost-plugin-arm.zip "${SHADOWSOCKS_PLUGIN_RAW_BASE_URL}/gost-plugin-arm.zip"
-wget -O gost-plugin-x86.zip "${SHADOWSOCKS_PLUGIN_RAW_BASE_URL}/gost-plugin-x86.zip"
-wget -O v2ray-plugin-universal.apk "${SHADOWSOCKS_PLUGIN_RAW_BASE_URL}/v2ray-plugin-universal-v4.44.0.apk"
-wget -O xray-plugin-universal.apk "${SHADOWSOCKS_PLUGIN_RAW_BASE_URL}/xray-plugin-universal-v1.5.4.apk"
+wget -O gost-plugin-arm.zip "https://raw.githubusercontent.com/NevermoreSSH/Shadowsocks-Plugin/main/gost-plugin-arm.zip"
+wget -O gost-plugin-x86.zip "https://raw.githubusercontent.com/NevermoreSSH/Shadowsocks-Plugin/main/gost-plugin-x86.zip"
+wget -O v2ray-plugin-universal.apk "https://raw.githubusercontent.com/NevermoreSSH/Shadowsocks-Plugin/main/v2ray-plugin-universal-v4.44.0.apk"
+wget -O xray-plugin-universal.apk "https://raw.githubusercontent.com/NevermoreSSH/Shadowsocks-Plugin/main/xray-plugin-universal-v1.5.4.apk"
 
 sudo lsof -t -i tcp:80 -s tcp:listen | sudo xargs kill
 # // Certificate File
 #cd /root/
 #rm -rf acme.sh
 #rm -rf .acme.sh
-#wget -O acme.sh ${PROJECT_RAW_BASE_URL}/acme.sh
+#wget -O acme.sh ${PROJECT_RAW_URL}/acme.sh
 #bash acme.sh --install
 #rm acme.sh
 #cd .acme.sh
+#bash acme.sh --register-account -m ${PROJECT_CF_EMAIL:-}
 #bash acme.sh --issue --standalone -d $domain --force
 #bash acme.sh --installcert -d $domain --fullchainpath /etc/shadowsocks/xray.crt --keypath /etc/shadowsocks/xray.key
 

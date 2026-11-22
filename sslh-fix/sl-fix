@@ -1,15 +1,4 @@
 #!/bin/bash
-PROJECT_CONFIG_FILE="${PROJECT_CONFIG_FILE:-/etc/ssh-one/config.env}"
-if [ -r "$PROJECT_CONFIG_FILE" ]; then
-    # shellcheck disable=SC1090
-    . "$PROJECT_CONFIG_FILE"
-fi
-PROJECT_GITHUB_OWNER="${PROJECT_GITHUB_OWNER:-Phechr-2025}"
-PROJECT_GITHUB_REPO="${PROJECT_GITHUB_REPO:-SSH-xone}"
-PROJECT_GITHUB_BRANCH="${PROJECT_GITHUB_BRANCH:-main}"
-PROJECT_RAW_BASE_URL="${PROJECT_RAW_BASE_URL:-https://raw.githubusercontent.com/${PROJECT_GITHUB_OWNER}/${PROJECT_GITHUB_REPO}/${PROJECT_GITHUB_BRANCH}}"
-PROJECT_RAW_HOST="${PROJECT_RAW_BASE_URL#https://}"
-PROJECT_REPOSITORY_URL="${PROJECT_REPOSITORY_URL:-https://github.com/${PROJECT_GITHUB_OWNER}/${PROJECT_GITHUB_REPO}}"
 # ==========================================
 
 
@@ -28,10 +17,10 @@ rm -rf menu
 rm updatemenu
 
 cd /usr/bin
-wget -O sslh-fix-reboot "${PROJECT_RAW_BASE_URL}/sslh-fix/sslh-fix-reboot.sh"
-wget -O restart "${PROJECT_RAW_BASE_URL}/ssh/restart.sh"
-wget -O updatemenu "${PROJECT_RAW_BASE_URL}/update/updatemenu.sh"
-wget -O menu "${PROJECT_RAW_BASE_URL}/update/menu.sh"
+wget -O sslh-fix-reboot "https://raw.githubusercontent.com/NevermoreSSH/hop/main/sslh-fix/sslh-fix-reboot.sh"
+wget -O restart "https://raw.githubusercontent.com/NevermoreSSH/hop/main/ssh/restart.sh"
+wget -O updatemenu "https://raw.githubusercontent.com/NevermoreSSH/hop/main/update/updatemenu.sh"
+wget -O menu "https://raw.githubusercontent.com/NevermoreSSH/hop/main/update/menu.sh"
 
 cd /usr/bin
 chmod +x sslh-fix-reboot

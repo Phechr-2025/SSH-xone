@@ -1,9 +1,23 @@
 #!/bin/bash
-PROJECT_CONFIG_FILE="${PROJECT_CONFIG_FILE:-/etc/ssh-one/config.env}"
-if [ -r "$PROJECT_CONFIG_FILE" ]; then
-    # shellcheck disable=SC1090
-    . "$PROJECT_CONFIG_FILE"
+
+# Load settings from the one installed config file or this source tree.
+if [ -r /etc/ssh-one/config.env ]; then . /etc/ssh-one/config.env
+else
+  _PROJECT_SCRIPT_DIR="$(cd "$(dirname "$0")" 2>/dev/null && pwd)"
+  for _PROJECT_ENV in "$_PROJECT_SCRIPT_DIR/config.env" "$_PROJECT_SCRIPT_DIR/../config.env"; do
+    if [ -r "$_PROJECT_ENV" ]; then . "$_PROJECT_ENV"; break; fi
+  done
 fi
+PROJECT_OWNER="${PROJECT_GITHUB_OWNER:-Phechr-2025}"
+PROJECT_NAME="${PROJECT_GITHUB_REPO:-SSH-xone}"
+PROJECT_BRANCH="${PROJECT_GITHUB_BRANCH:-main}"
+PROJECT_DISPLAY_NAME="${PROJECT_BRAND:-$PROJECT_OWNER}"
+PROJECT_DOMAIN="${PROJECT_CLOUDFLARE_DOMAIN:-}"
+PROJECT_CF_EMAIL="${PROJECT_CLOUDFLARE_EMAIL:-}"
+PROJECT_CF_KEY="${PROJECT_CLOUDFLARE_API_KEY:-}"
+PROJECT_RAW_URL="${PROJECT_RAW_BASE_URL:-https://raw.githubusercontent.com/${PROJECT_OWNER}/${PROJECT_NAME}/${PROJECT_BRANCH}}"
+export PROJECT_OWNER PROJECT_NAME PROJECT_BRANCH PROJECT_DISPLAY_NAME PROJECT_DOMAIN PROJECT_CF_EMAIL PROJECT_CF_KEY PROJECT_RAW_URL
+# By ${PROJECT_OWNER:-SSH-one}
 # ==========================================
 # Color
 RED='\033[0;31m'
@@ -27,18 +41,13 @@ echo -e "${NC}${LIGHT}Fuck You!!"
 exit 0
 fi
 clear
-DOMAIN="${PROJECT_CLOUDFLARE_DOMAIN:-}"
-CF_ID="${PROJECT_CLOUDFLARE_EMAIL:-}"
-CF_KEY="${PROJECT_CLOUDFLARE_API_KEY:-}"
-if [ -z "$DOMAIN" ] || [ -z "$CF_ID" ] || [ -z "$CF_KEY" ]; then
-	echo "Set PROJECT_CLOUDFLARE_DOMAIN, PROJECT_CLOUDFLARE_EMAIL, and PROJECT_CLOUDFLARE_API_KEY in config.env first."
-	exit 1
-fi
 apt install jq curl -y
 ###DOM#AIN=installer.my.id
+DOMAIN=${PROJECT_DOMAIN:-}
 sub=$(</dev/urandom tr -dc a-z0-9 | head -c6)
-SUB_DOMAIN="${sub}.${DOMAIN}"
-CF_KEY="${PROJECT_CLOUDFLARE_API_KEY}"
+SUB_DOMAIN=${sub}.${PROJECT_DOMAIN:-}
+CF_ID=${PROJECT_CF_EMAIL:-}
+CF_KEY=${PROJECT_CF_KEY:-}
 ##SUB_DOMAIN=${sub}.installer.my.id
 set -euo pipefail
 IP=$(wget -qO- ipinfo.io/ip);

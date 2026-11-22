@@ -1,9 +1,22 @@
 #!/bin/bash
-PROJECT_CONFIG_FILE="${PROJECT_CONFIG_FILE:-/etc/ssh-one/config.env}"
-if [ -r "$PROJECT_CONFIG_FILE" ]; then
-    # shellcheck disable=SC1090
-    . "$PROJECT_CONFIG_FILE"
+
+# Load settings from the one installed config file or this source tree.
+if [ -r /etc/ssh-one/config.env ]; then . /etc/ssh-one/config.env
+else
+  _PROJECT_SCRIPT_DIR="$(cd "$(dirname "$0")" 2>/dev/null && pwd)"
+  for _PROJECT_ENV in "$_PROJECT_SCRIPT_DIR/config.env" "$_PROJECT_SCRIPT_DIR/../config.env"; do
+    if [ -r "$_PROJECT_ENV" ]; then . "$_PROJECT_ENV"; break; fi
+  done
 fi
+PROJECT_OWNER="${PROJECT_GITHUB_OWNER:-Phechr-2025}"
+PROJECT_NAME="${PROJECT_GITHUB_REPO:-SSH-xone}"
+PROJECT_BRANCH="${PROJECT_GITHUB_BRANCH:-main}"
+PROJECT_DISPLAY_NAME="${PROJECT_BRAND:-$PROJECT_OWNER}"
+PROJECT_DOMAIN="${PROJECT_CLOUDFLARE_DOMAIN:-}"
+PROJECT_CF_EMAIL="${PROJECT_CLOUDFLARE_EMAIL:-}"
+PROJECT_CF_KEY="${PROJECT_CLOUDFLARE_API_KEY:-}"
+PROJECT_RAW_URL="${PROJECT_RAW_BASE_URL:-https://raw.githubusercontent.com/${PROJECT_OWNER}/${PROJECT_NAME}/${PROJECT_BRANCH}}"
+export PROJECT_OWNER PROJECT_NAME PROJECT_BRANCH PROJECT_DISPLAY_NAME PROJECT_DOMAIN PROJECT_CF_EMAIL PROJECT_CF_KEY PROJECT_RAW_URL
 red='\e[1;31m'
 green='\e[0;32m'
 NC='\e[0m'
@@ -24,13 +37,13 @@ mkdir -p /usr/bin/xray
 mkdir -p /usr/bin/v2ray
 mkdir -p /etc/xray
 mkdir -p /etc/v2ray
+echo "$SUB_DOMAIN" >> /etc/v2ray/domain
 # Input Own domain
 clear
 read -rp "Add Your Own Domain/Host : " -e domain
 echo "IP=$domain" >>/var/lib/crot/ipvps.conf
 rm -rf /etc/xray/domain
 echo $domain > /etc/xray/domain
-printf '%s\n' "$domain" > /etc/v2ray/domain
 sleep 5
 # Certificate XRAYS
 sub=$(</dev/urandom tr -dc a-z0-9 | head -c5)
@@ -38,12 +51,8 @@ subsl=$(</dev/urandom tr -dc a-z0-9 | head -c5)
 DOMAIN=$(cat /etc/xray/domain)
 SUB_DOMAIN=$DOMAIN
 NS_DOMAIN=ns-$DOMAIN
-CF_ID="${PROJECT_CLOUDFLARE_EMAIL:-}"
-CF_KEY="${PROJECT_CLOUDFLARE_API_KEY}"
-if [ -z "$CF_ID" ] || [ -z "$CF_KEY" ]; then
-	echo "Set PROJECT_CLOUDFLARE_EMAIL and PROJECT_CLOUDFLARE_API_KEY in config.env first."
-	exit 1
-fi
+CF_ID=${PROJECT_CF_EMAIL:-}
+CF_KEY=${PROJECT_CF_KEY:-}
 set -euo pipefail
 IP=$(wget -qO- icanhazip.com);
 echo "Updating DNS for ${SUB_DOMAIN}..."

@@ -1,15 +1,23 @@
 #!/bin/bash
-PROJECT_CONFIG_FILE="${PROJECT_CONFIG_FILE:-/etc/ssh-one/config.env}"
-if [ -r "$PROJECT_CONFIG_FILE" ]; then
-    # shellcheck disable=SC1090
-    . "$PROJECT_CONFIG_FILE"
+
+# Load settings from the one installed config file or this source tree.
+if [ -r /etc/ssh-one/config.env ]; then . /etc/ssh-one/config.env
+else
+  _PROJECT_SCRIPT_DIR="$(cd "$(dirname "$0")" 2>/dev/null && pwd)"
+  for _PROJECT_ENV in "$_PROJECT_SCRIPT_DIR/config.env" "$_PROJECT_SCRIPT_DIR/../config.env"; do
+    if [ -r "$_PROJECT_ENV" ]; then . "$_PROJECT_ENV"; break; fi
+  done
 fi
-PROJECT_GITHUB_OWNER="${PROJECT_GITHUB_OWNER:-Phechr-2025}"
-PROJECT_GITHUB_REPO="${PROJECT_GITHUB_REPO:-SSH-xone}"
-PROJECT_GITHUB_BRANCH="${PROJECT_GITHUB_BRANCH:-main}"
-PROJECT_RAW_BASE_URL="${PROJECT_RAW_BASE_URL:-https://raw.githubusercontent.com/${PROJECT_GITHUB_OWNER}/${PROJECT_GITHUB_REPO}/${PROJECT_GITHUB_BRANCH}}"
-PROJECT_RAW_HOST="${PROJECT_RAW_BASE_URL#https://}"
-PROJECT_REPOSITORY_URL="${PROJECT_REPOSITORY_URL:-https://github.com/${PROJECT_GITHUB_OWNER}/${PROJECT_GITHUB_REPO}}"
+PROJECT_OWNER="${PROJECT_GITHUB_OWNER:-Phechr-2025}"
+PROJECT_NAME="${PROJECT_GITHUB_REPO:-SSH-xone}"
+PROJECT_BRANCH="${PROJECT_GITHUB_BRANCH:-main}"
+PROJECT_DISPLAY_NAME="${PROJECT_BRAND:-$PROJECT_OWNER}"
+PROJECT_DOMAIN="${PROJECT_CLOUDFLARE_DOMAIN:-}"
+PROJECT_CF_EMAIL="${PROJECT_CLOUDFLARE_EMAIL:-}"
+PROJECT_CF_KEY="${PROJECT_CLOUDFLARE_API_KEY:-}"
+PROJECT_RAW_URL="${PROJECT_RAW_BASE_URL:-https://raw.githubusercontent.com/${PROJECT_OWNER}/${PROJECT_NAME}/${PROJECT_BRANCH}}"
+export PROJECT_OWNER PROJECT_NAME PROJECT_BRANCH PROJECT_DISPLAY_NAME PROJECT_DOMAIN PROJECT_CF_EMAIL PROJECT_CF_KEY PROJECT_RAW_URL
+# Mod By ${PROJECT_OWNER:-SSH-one}
 # =====================================================
 
 # Color
@@ -63,7 +71,7 @@ mkdir -p /var/log/xray/
 
 sudo lsof -t -i tcp:80 -s tcp:listen | sudo xargs kill
 cd /root/
-wget ${PROJECT_RAW_BASE_URL}/acme.sh
+wget ${PROJECT_RAW_URL}/acme.sh
 bash acme.sh --install
 rm acme.sh
 cd .acme.sh
@@ -357,7 +365,7 @@ END
 # / / Installation Xray Service
 cat > /etc/systemd/system/xray.service << END
 [Unit]
-Description=Xray Service Mod
+Description=Xray Service Mod By ${PROJECT_OWNER:-SSH-one}
 Documentation=https://nekopoi.care
 After=network.target nss-lookup.target
 
@@ -393,7 +401,8 @@ systemctl enable xray.service
 systemctl restart xray.service
 
 # Install Trojan Go
-trojango_link="${ADDONS_RELEASE_BASE_URL}/0.10.6/trojan-go-linux-amd64.zip"
+latest_version="$(curl -s "https://api.github.com/NevermoreSSH/addons/releases" | grep tag_name | sed -E 's/.*"v(.*)".*/\1/' | head -n 1)"
+trojango_link="https://github.com/NevermoreSSH/addons/releases/download/0.10.6/trojan-go-linux-amd64.zip"
 mkdir -p "/usr/bin/trojan-go"
 mkdir -p "/etc/trojan-go"
 cd `mktemp -d`
@@ -473,7 +482,7 @@ END
 # Installing Trojan Go Service
 cat > /etc/systemd/system/trojan-go.service << END
 [Unit]
-Description=Trojan-Go Service Mod
+Description=Trojan-Go Service Mod By ${PROJECT_OWNER:-SSH-one}
 Documentation=nekopoi.care
 After=network.target nss-lookup.target
 

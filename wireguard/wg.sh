@@ -1,18 +1,26 @@
 #!/bin/bash
-PROJECT_CONFIG_FILE="${PROJECT_CONFIG_FILE:-/etc/ssh-one/config.env}"
-if [ -r "$PROJECT_CONFIG_FILE" ]; then
-    # shellcheck disable=SC1090
-    . "$PROJECT_CONFIG_FILE"
+
+# Load settings from the one installed config file or this source tree.
+if [ -r /etc/ssh-one/config.env ]; then . /etc/ssh-one/config.env
+else
+  _PROJECT_SCRIPT_DIR="$(cd "$(dirname "$0")" 2>/dev/null && pwd)"
+  for _PROJECT_ENV in "$_PROJECT_SCRIPT_DIR/config.env" "$_PROJECT_SCRIPT_DIR/../config.env"; do
+    if [ -r "$_PROJECT_ENV" ]; then . "$_PROJECT_ENV"; break; fi
+  done
 fi
-PROJECT_GITHUB_OWNER="${PROJECT_GITHUB_OWNER:-Phechr-2025}"
-PROJECT_GITHUB_REPO="${PROJECT_GITHUB_REPO:-SSH-xone}"
-PROJECT_GITHUB_BRANCH="${PROJECT_GITHUB_BRANCH:-main}"
-PROJECT_RAW_BASE_URL="${PROJECT_RAW_BASE_URL:-https://raw.githubusercontent.com/${PROJECT_GITHUB_OWNER}/${PROJECT_GITHUB_REPO}/${PROJECT_GITHUB_BRANCH}}"
-PROJECT_RAW_HOST="${PROJECT_RAW_BASE_URL#https://}"
-PROJECT_REPOSITORY_URL="${PROJECT_REPOSITORY_URL:-https://github.com/${PROJECT_GITHUB_OWNER}/${PROJECT_GITHUB_REPO}}"
+PROJECT_OWNER="${PROJECT_GITHUB_OWNER:-Phechr-2025}"
+PROJECT_NAME="${PROJECT_GITHUB_REPO:-SSH-xone}"
+PROJECT_BRANCH="${PROJECT_GITHUB_BRANCH:-main}"
+PROJECT_DISPLAY_NAME="${PROJECT_BRAND:-$PROJECT_OWNER}"
+PROJECT_DOMAIN="${PROJECT_CLOUDFLARE_DOMAIN:-}"
+PROJECT_CF_EMAIL="${PROJECT_CLOUDFLARE_EMAIL:-}"
+PROJECT_CF_KEY="${PROJECT_CLOUDFLARE_API_KEY:-}"
+PROJECT_RAW_URL="${PROJECT_RAW_BASE_URL:-https://raw.githubusercontent.com/${PROJECT_OWNER}/${PROJECT_NAME}/${PROJECT_BRANCH}}"
+export PROJECT_OWNER PROJECT_NAME PROJECT_BRANCH PROJECT_DISPLAY_NAME PROJECT_DOMAIN PROJECT_CF_EMAIL PROJECT_CF_KEY PROJECT_RAW_URL
 # Debian 9 & 10 64bit
 # Ubuntu 18.04 & 20.04 bit
 # Centos 7 & 8 64bit 
+# Mod By ${PROJECT_OWNER:-SSH-one}
 # ==========================================
 # Color
 RED='\033[0;31m'
@@ -40,7 +48,7 @@ exit 0
 fi
 # ==================================================
 # Link Hosting Kalian
-fisabiliyusri="${PROJECT_RAW_HOST}/wireguard"
+fisabiliyusri="raw.githubusercontent.com/${PROJECT_OWNER}/${PROJECT_NAME}/${PROJECT_BRANCH}/wireguard"
 
 # Check OS version
 if [[ -e /etc/debian_version ]]; then
@@ -59,6 +67,7 @@ if [[ -e /etc/wireguard/params ]]; then
 	exit 1
 fi
 
+echo -e "${Info} Wireguard Script Mod By ${PROJECT_OWNER:-SSH-one}"
 # Detect public IPv4 address and pre-fill for the user
 
 # Detect public interface and pre-fill for the user
@@ -124,9 +133,9 @@ WG_RUNNING=$?
 
 # Tambahan
 cd /usr/bin
-wget -O addwg "${PROJECT_RAW_BASE_URL}/wireguard/addwg.sh"
-wget -O delwg "${PROJECT_RAW_BASE_URL}/wireguard/delwg.sh"
-wget -O renewwg "${PROJECT_RAW_BASE_URL}/wireguard/renewwg.sh"
+wget -O addwg "${PROJECT_RAW_URL}/wireguard/addwg.sh"
+wget -O delwg "${PROJECT_RAW_URL}/wireguard/delwg.sh"
+wget -O renewwg "${PROJECT_RAW_URL}/wireguard/renewwg.sh"
 chmod +x addwg
 chmod +x delwg
 chmod +x renewwg

@@ -1,5 +1,9 @@
-# SlowDNS
+# SlowDNS installer
 
-Run `install-sldns` as root to install SlowDNS. The artifact repository is configured by `SLOWDNS_RAW_BASE_URL` in the root `config.env` file.
+Run the bundled installer as root:
 
-After installation, manage SlowDNS from the main menu or with the service commands installed by the script.
+```sh
+bash SLDNS/install-sldns
+```
+
+SlowDNS requires a configured nameserver domain in `/root/nsdomain`. The installer also downloads legacy SlowDNS runtime files from the upstream `hopp` repository; those files are not part of this `hop` checkout and their upstream location is not controlled by `project.env`.

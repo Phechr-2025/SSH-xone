@@ -1,5 +1,5 @@
 [Unit]
-Description=Python proxy service
+Description=Python Proxy By NevermoreSSH
 Documentation=https://nekopoi.care
 After=network.target nss-lookup.target
 

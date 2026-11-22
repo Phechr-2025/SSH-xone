@@ -1,61 +1,32 @@
 #!/bin/bash
+
+# Load settings from the one installed config file or this source tree.
+if [ -r /etc/ssh-one/config.env ]; then . /etc/ssh-one/config.env
+else
+  _PROJECT_SCRIPT_DIR="$(cd "$(dirname "$0")" 2>/dev/null && pwd)"
+  for _PROJECT_ENV in "$_PROJECT_SCRIPT_DIR/config.env" "$_PROJECT_SCRIPT_DIR/../config.env"; do
+    if [ -r "$_PROJECT_ENV" ]; then . "$_PROJECT_ENV"; break; fi
+  done
+fi
+PROJECT_OWNER="${PROJECT_GITHUB_OWNER:-Phechr-2025}"
+PROJECT_NAME="${PROJECT_GITHUB_REPO:-SSH-xone}"
+PROJECT_BRANCH="${PROJECT_GITHUB_BRANCH:-main}"
+PROJECT_DISPLAY_NAME="${PROJECT_BRAND:-$PROJECT_OWNER}"
+PROJECT_DOMAIN="${PROJECT_CLOUDFLARE_DOMAIN:-}"
+PROJECT_CF_EMAIL="${PROJECT_CLOUDFLARE_EMAIL:-}"
+PROJECT_CF_KEY="${PROJECT_CLOUDFLARE_API_KEY:-}"
+PROJECT_RAW_URL="${PROJECT_RAW_BASE_URL:-https://raw.githubusercontent.com/${PROJECT_OWNER}/${PROJECT_NAME}/${PROJECT_BRANCH}}"
+export PROJECT_OWNER PROJECT_NAME PROJECT_BRANCH PROJECT_DISPLAY_NAME PROJECT_DOMAIN PROJECT_CF_EMAIL PROJECT_CF_KEY PROJECT_RAW_URL
 if [ "${EUID}" -ne 0 ]; then
 		echo "You need to run this script as root"
 		exit 1
 fi
+# Shared fork configuration: edit config.env once after forking.
+SETUP_ROOT="$(cd "$(dirname "$0")" && pwd)"
+. "$SETUP_ROOT/lib/project.sh"
 if [ "$(systemd-detect-virt)" == "openvz" ]; then
 		echo "OpenVZ is not supported"
 		exit 1
-fi
-
-LOCAL_CONFIG_FILE="$(dirname "$(readlink -f "$0" 2>/dev/null || printf '%s' "$0")")/config.env"
-PROJECT_CONFIG_DIR="${PROJECT_CONFIG_DIR:-/etc/ssh-one}"
-PROJECT_CONFIG_FILE="$PROJECT_CONFIG_DIR/config.env"
-if [ -s "$PROJECT_CONFIG_FILE" ]; then
-	# shellcheck disable=SC1090
-	. "$PROJECT_CONFIG_FILE"
-elif [ -s "$LOCAL_CONFIG_FILE" ]; then
-	# shellcheck disable=SC1090
-	. "$LOCAL_CONFIG_FILE"
-fi
-PROJECT_GITHUB_OWNER="${PROJECT_GITHUB_OWNER:-Phechr-2025}"
-PROJECT_GITHUB_REPO="${PROJECT_GITHUB_REPO:-SSH-xone}"
-PROJECT_GITHUB_BRANCH="${PROJECT_GITHUB_BRANCH:-main}"
-PROJECT_CONFIG_DIR="${PROJECT_CONFIG_DIR:-/etc/ssh-one}"
-PROJECT_RAW_BASE_URL="${PROJECT_RAW_BASE_URL:-https://raw.githubusercontent.com/${PROJECT_GITHUB_OWNER}/${PROJECT_GITHUB_REPO}/${PROJECT_GITHUB_BRANCH}}"
-PROJECT_API_BASE_URL="${PROJECT_API_BASE_URL:-https://api.github.com/repos/${PROJECT_GITHUB_OWNER}/${PROJECT_GITHUB_REPO}}"
-mkdir -p "$PROJECT_CONFIG_DIR"
-if [ ! -s "$PROJECT_CONFIG_FILE" ] && [ -s "$LOCAL_CONFIG_FILE" ]; then
-	install -m 0600 "$LOCAL_CONFIG_FILE" "$PROJECT_CONFIG_FILE"
-fi
-if [ ! -s "$PROJECT_CONFIG_FILE" ]; then
-	if command -v curl >/dev/null 2>&1; then
-		curl -fLsS --retry 2 "$PROJECT_RAW_BASE_URL/config.env" -o "${PROJECT_CONFIG_FILE}.tmp" || exit 1
-	else
-		wget -q -T 20 -O "${PROJECT_CONFIG_FILE}.tmp" "$PROJECT_RAW_BASE_URL/config.env" || exit 1
-	fi
-	install -m 0600 "${PROJECT_CONFIG_FILE}.tmp" "$PROJECT_CONFIG_FILE"
-	rm -f "${PROJECT_CONFIG_FILE}.tmp"
-fi
-# shellcheck disable=SC1090
-. "$PROJECT_CONFIG_FILE"
-chmod 0600 "$PROJECT_CONFIG_FILE"
-PROJECT_GITHUB_OWNER="${PROJECT_GITHUB_OWNER:-Phechr-2025}"
-PROJECT_GITHUB_REPO="${PROJECT_GITHUB_REPO:-SSH-xone}"
-PROJECT_GITHUB_BRANCH="${PROJECT_GITHUB_BRANCH:-main}"
-PROJECT_RAW_BASE_URL="${PROJECT_RAW_BASE_URL:-https://raw.githubusercontent.com/${PROJECT_GITHUB_OWNER}/${PROJECT_GITHUB_REPO}/${PROJECT_GITHUB_BRANCH}}"
-PROJECT_API_BASE_URL="${PROJECT_API_BASE_URL:-https://api.github.com/repos/${PROJECT_GITHUB_OWNER}/${PROJECT_GITHUB_REPO}}"
-PROJECT_RAW_HOST="${PROJECT_RAW_BASE_URL#https://}"
-
-if [ -r /etc/os-release ]; then
-	. /etc/os-release
-	case "${ID:-}:${VERSION_ID:-}" in
-		debian:9|debian:10|debian:11|ubuntu:18.04|ubuntu:20.04) ;;
-		*) echo "Supported systems: Debian 9/10/11 and Ubuntu 18.04/20.04. Found ${PRETTY_NAME:-unknown}."; exit 1 ;;
-	esac
-else
-	echo "Cannot identify this Linux distribution."
-	exit 1
 fi
 # ==========================================
 # Color
@@ -68,17 +39,26 @@ PURPLE='\033[0;35m'
 CYAN='\033[0;36m'
 LIGHT='\033[0;37m'
 # ==========================================
-# Component paths derive from the shared repository settings.
-akbarvpn="${PROJECT_RAW_HOST}/ssh"
-akbarvpnn="${PROJECT_RAW_HOST}/sstp"
-akbarvpnnn="${PROJECT_RAW_HOST}/ssr"
-akbarvpnnnn="${PROJECT_RAW_HOST}/shadowsocks"
-akbarvpnnnnn="${PROJECT_RAW_HOST}/wireguard"
-akbarvpnnnnnn="${PROJECT_RAW_HOST}/xray"
-akbarvpnnnnnnn="${PROJECT_RAW_HOST}/ipsec"
-akbarvpnnnnnnnn="${PROJECT_RAW_HOST}/backup"
-akbarvpnnnnnnnnn="${PROJECT_RAW_HOST}/websocket"
-akbarvpnnnnnnnnnn="${PROJECT_RAW_HOST}/ohp"
+# Link Hosting Kalian Untuk Ssh Vpn
+akbarvpn="raw.githubusercontent.com/${PROJECT_OWNER}/${PROJECT_NAME}/${PROJECT_BRANCH}/ssh"
+# Link Hosting Kalian Untuk Sstp
+akbarvpnn="raw.githubusercontent.com/${PROJECT_OWNER}/${PROJECT_NAME}/${PROJECT_BRANCH}/sstp"
+# Link Hosting Kalian Untuk Ssr
+akbarvpnnn="raw.githubusercontent.com/${PROJECT_OWNER}/${PROJECT_NAME}/${PROJECT_BRANCH}/ssr"
+# Link Hosting Kalian Untuk Shadowsocks
+akbarvpnnnn="raw.githubusercontent.com/${PROJECT_OWNER}/${PROJECT_NAME}/${PROJECT_BRANCH}/shadowsocks"
+# Link Hosting Kalian Untuk Wireguard
+akbarvpnnnnn="raw.githubusercontent.com/${PROJECT_OWNER}/${PROJECT_NAME}/${PROJECT_BRANCH}/wireguard"
+# Link Hosting Kalian Untuk Xray
+akbarvpnnnnnn="raw.githubusercontent.com/${PROJECT_OWNER}/${PROJECT_NAME}/${PROJECT_BRANCH}/xray"
+# Link Hosting Kalian Untuk Ipsec
+akbarvpnnnnnnn="raw.githubusercontent.com/${PROJECT_OWNER}/${PROJECT_NAME}/${PROJECT_BRANCH}/ipsec"
+# Link Hosting Kalian Untuk Backup
+akbarvpnnnnnnnn="raw.githubusercontent.com/${PROJECT_OWNER}/${PROJECT_NAME}/${PROJECT_BRANCH}/backup"
+# Link Hosting Kalian Untuk Websocket
+akbarvpnnnnnnnnn="raw.githubusercontent.com/${PROJECT_OWNER}/${PROJECT_NAME}/${PROJECT_BRANCH}/websocket"
+# Link Hosting Kalian Untuk Ohp
+akbarvpnnnnnnnnnn="raw.githubusercontent.com/${PROJECT_OWNER}/${PROJECT_NAME}/${PROJECT_BRANCH}/ohp"
 
 # Getting
 MYIP=$(wget -qO- ipinfo.io/ip);
@@ -122,16 +102,16 @@ wget https://${akbarvpnnnnnnnnn}/edu.sh && chmod +x edu.sh && ./edu.sh
 # Ohp Server
 wget https://${akbarvpnnnnnnnnnn}/ohp.sh && chmod +x ohp.sh && ./ohp.sh
 # Install SlowDNS
-wget "${PROJECT_RAW_BASE_URL}/SLDNS/install-sldns" -O install-sldns && chmod +x install-sldns && ./install-sldns
+wget "${PROJECT_RAW_URL}/SLDNS/install-sldns" -O install-sldns && chmod +x install-sldns && ./install-sldns
 # Informasi IP Saya dan Semua Port TCP UDP
-# wget "${PROJECT_RAW_BASE_URL}/ipsaya.sh" && chmod +x ipsaya.sh
+# wget ${PROJECT_RAW_URL}/ipsaya.sh && chmod +x ipsaya.sh
 #
 # install xray sl-grpc
-# wget "${PROJECT_RAW_BASE_URL}/grpc/sl-grpc.sh" && chmod +x sl-grpc.sh && screen -S sl-grpc ./sl-grpc.sh
+# wget ${PROJECT_RAW_URL}/grpc/sl-grpc.sh && chmod +x sl-grpc.sh && screen -S sl-grpc ./sl-grpc.sh
 # install xray grpc
-# wget "${PROJECT_RAW_BASE_URL}/grpc/xray-grpc.sh" && chmod +x xray-grpc.sh && screen -S xray-grpc ./xray-grpc.sh
+# wget ${PROJECT_RAW_URL}/grpc/xray-grpc.sh && chmod +x xray-grpc.sh && screen -S xray-grpc ./xray-grpc.sh
 # install shadowsocks plugin
-# wget "${PROJECT_RAW_BASE_URL}/shadowsocks-plugin/install-ss-plugin.sh" && chmod +x install-ss-plugin.sh && ./install-ss-plugin.sh
+# wget ${PROJECT_RAW_URL}/shadowsocks-plugin/install-ss-plugin.sh && chmod +x install-ss-plugin.sh && ./install-ss-plugin.sh
  
 
 rm -f /root/ssh-vpn.sh
@@ -166,13 +146,12 @@ systemctl enable autosett
 wget -O /etc/set.sh "https://${akbarvpn}/set.sh"
 chmod +x /etc/set.sh
 history -c
-version=""
-if command -v curl >/dev/null 2>&1; then
-	version="$(curl -fLsS --connect-timeout 15 "${PROJECT_API_BASE_URL}/commits/${PROJECT_GITHUB_BRANCH}" 2>/dev/null | sed -n 's/.*"sha"[[:space:]]*:[[:space:]]*"\([0-9a-fA-F]\{7\}\)[0-9a-fA-F]*".*/\1/p' | head -n1 || true)"
-fi
-[ -n "$version" ] || version="unknown"
-printf '%s\n' "$version" > "$PROJECT_VERSION_FILE"
-printf '%s\n' "$version" > "$PROJECT_CONFIG_DIR/version"
+# Install the UDP Custom service using the bundled VVV-derived config and binary.
+bash "$SETUP_ROOT/udp/install.sh"
+install -d -m 0755 "/etc/${PROJECT_NAME}"
+install -d -m 0755 "$PROJECT_CONFIG_DIR"
+install -m 0600 "$SETUP_ROOT/config.env" "$PROJECT_CONFIG"
+printf '%s\n' "$(project_version)" > "$PROJECT_VERSION_FILE"
 echo " "
 echo "Installation has been completed!!"echo " "
 echo "============================================================================" | tee -a log-install.txt
@@ -227,7 +206,4 @@ echo "   - White Label" | tee -a log-install.txt
 echo "   - Installation Log --> /root/log-install.txt"  | tee -a log-install.txt
 echo ""
 echo ""
-echo " Reboot 15 Sec"
-sleep 15
-rm -f setup.sh
-reboot
+echo "Installation complete. Reboot is recommended after reviewing /root/log-install.txt."

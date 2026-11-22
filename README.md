@@ -1,269 +1,31 @@
-<p align="center">
+# SSH-one VPN Script
 
+Fork-ready distribution based on the upstream `hop` script set. Project identity, update source, domain, and optional Cloudflare credentials are configured in `config.env`; edit those values in one place when you fork it. The previous hard-coded Cloudflare API keys and account emails were removed; Cloudflare automation needs `PROJECT_CLOUDFLARE_DOMAIN`, `PROJECT_CLOUDFLARE_EMAIL`, and `PROJECT_CLOUDFLARE_API_KEY` set there.
 
-<h2 align="center">
-Auto Script Install All VPN Service
-Project identity and repository settings are managed in `config.env`.
-<img src="https://img.shields.io/badge/Release-v1.4-purple.svg"></h2>
+## Supported systems
 
-</p> 
-<h2 align="center"> Supported Linux Distribution</h2>
-<p align="center"><img src="https://d33wubrfki0l68.cloudfront.net/5911c43be3b1da526ed609e9c55783d9d0f6b066/9858b/assets/img/debian-ubuntu-hover.png"width="400"></p> 
-<p align="center">
-<img src="https://img.shields.io/static/v1?style=for-the-badge&logo=debian&label=Debian%209&message=Stretch&color=purple"> 
-<img src="https://img.shields.io/static/v1?style=for-the-badge&logo=debian&label=Debian%2010&message=Buster&color=purple">  
-<img src="https://img.shields.io/static/v1?style=for-the-badge&logo=debian&label=Debian%2011&message=Bullseye&color=purple"> 
-<p align="center">
-<img src="https://img.shields.io/static/v1?style=for-the-badge&logo=ubuntu&label=Ubuntu%2018&message=Lts&color=red"> 
-<img src="https://img.shields.io/static/v1?style=for-the-badge&logo=ubuntu&label=Ubuntu%2020&message=Lts&color=red">
-</p>
+- Debian 9, 10, and 11
+- Ubuntu 18.04 and 20.04
 
-<h2 align="center">Network VPN</h2>
+Run on a clean VPS as root. Install the system packages and start the installer with one paste (change the first two values if your GitHub repository differs):
 
-<h2 align="center">
-
-![Hits](https://img.shields.io/badge/SSH-SlowDNS-8020f3?style=for-the-badge&logo=Cloudflare&logoColor=white&edge_flat=false)
-![Hits](https://img.shields.io/badge/SSH-Websocket-8020f3?style=for-the-badge&logo=Cloudflare&logoColor=white&edge_flat=false)
-![Hits](https://img.shields.io/badge/XRAY-Vmess-f34b20?style=for-the-badge&logo=Cloudflare&logoColor=white&edge_flat=false)
-![Hits](https://img.shields.io/badge/XRAY-VLess-f34b20?style=for-the-badge&logo=Cloudflare&logoColor=white&edge_flat=false)
-![Hits](https://img.shields.io/badge/XRAY-Trojan-f34b20?style=for-the-badge&logo=Cloudflare&logoColor=white&edge_flat=false)
-</h2>
-
-
-## ADDITIONAL INFO, PLEASE READ
-* MINIMUM RAM 1 GB TO USE THIS SCRIPT
-* SORRY I DELETED THE SQUID PROXY, please edit this script manually
-
-# Special For OS
-*  Debian 9 / 10 / 11
-*  Ubuntu 18.04 / 20.04
-* Tested For VPS AWS, AZURE, DigitalOcean, Centerhop
-
-# New Update & Fix Bug
-* Support custom path / worryfree VMESS VLESS (need change XrayCore Mod by dharak36 on settings)
-* New BBRPLUS 5.15.96 by UJ6XN
-* Fixed Auto Deleted Expired Account SSH & XRAYS
-* Fixed Add Domain & NameServer while installing script
-* New Interface
-## Installation 
-## 1.
-<img src="https://img.shields.io/badge/Update%20_&_%20Upgrade Debian 9,10,11-purple">
-
- ```html
-apt-get update && apt-get upgrade -y && update-grub && sleep 2 && reboot 
-  ```
-  or
-
-```html
-apt update -y && apt upgrade -y && apt dist-upgrade -y && reboot
-
+```sh
+PROJECT_GITHUB_OWNER=Phechr-2025 PROJECT_GITHUB_REPO=SSH-xone PROJECT_GITHUB_BRANCH=main; apt update && apt install -y ca-certificates curl tar wget screen bzip2 gzip coreutils unzip && wget -qO /root/ssh-xone-install.sh "https://raw.githubusercontent.com/${PROJECT_GITHUB_OWNER}/${PROJECT_GITHUB_REPO}/${PROJECT_GITHUB_BRANCH}/install.sh" && sed -i 's/\r$//' /root/ssh-xone-install.sh && PROJECT_GITHUB_OWNER="$PROJECT_GITHUB_OWNER" PROJECT_GITHUB_REPO="$PROJECT_GITHUB_REPO" PROJECT_GITHUB_BRANCH="$PROJECT_GITHUB_BRANCH" bash /root/ssh-xone-install.sh
 ```
-  
-  <img src="https://img.shields.io/badge/Update%20_&_%20Upgrade Ubuntu 18 & 20 LTS-purple">
 
-  ```html
-  apt-get update && apt-get upgrade -y && apt dist-upgrade -y && update-grub && sleep 2 && reboot
+The repository must contain `config.env` and the scripts before running the command. For a local source checkout, run `bash install.sh` as root.
 
-  ```
+## Main menu
 
-   or
-   ```html
-  apt-get update && apt-get upgrade -y && apt dist-upgrade -y && update-grub && reboot
+`menu` opens the 1–25 menu. UDP is option 1. `17. UPDATE SSH / MENU (Update)` downloads and replaces the complete project script tree from the configured GitHub repository; the previous tree is kept at `/opt/ssh-xone.previous`. `updatemenu` remains an alias for the same updater. The installed version shown in the menu is the short Git commit hash.
 
-  ```
-  
-### 2.
+## UDP Custom
 
-  <img src="https://img.shields.io/badge/Install_All_Service_VPN%20-purple">
+UDP Custom is provided as a separate service menu (`udp-menu`) and is also available from the main menu. The install uses the binary and default `config.json` bundled under `udp/`, creates `udp-custom.service`, enables it at boot, and keeps the existing configuration with a timestamped backup during repair. The service configuration follows the `udp-custom server` layout used by the referenced scripts. To remove it, select option 6 in the UDP menu; the remover asks whether to keep `/root/udp/config.json` and backups.
 
-* Install the full service set once as root. This command supports Debian 9/10/11 and Ubuntu 18.04/20.04.
-Keep Cloudflare API credentials out of the public repository; enter them only in `/etc/ssh-one/config.env` on the VPS.
-   
-```html
-sysctl -w net.ipv6.conf.all.disable_ipv6=1 && sysctl -w net.ipv6.conf.default.disable_ipv6=1 && apt-get update && apt-get install -y bzip2 gzip coreutils screen curl wget git unzip ca-certificates && git clone --depth 1 --branch main https://github.com/Phechr-2025/SSH-xone.git /root/SSH-xone && chmod +x /root/SSH-xone/setup.sh && sed -i -e 's/\r$//' /root/SSH-xone/setup.sh && screen -S setup /root/SSH-xone/setup.sh
-```
-  
+Review firewall rules and `udp/config.json` for the ports and behavior you intend to expose. The bundled third-party UDP executable is a prebuilt Linux amd64 binary and will not run on ARM or other architectures.
 
-* UDP Custom accepts destination UDP ports 1-65535. Open `udp-custom-menu` to install/update it, create/list/renew/delete accounts, show connection details, manage the service, or uninstall it. Accounts use local Linux usernames/passwords and expiry dates, following the UDP Custom account method.
+## Uninstall
 
-### 4. DONE
+Use `udp-menu` → `6` to remove only UDP Custom, or run `uninstall-project` for the full script suite. The full remover asks for an explicit `REMOVE`, creates a timestamped archive under `/root`, leaves Linux accounts and shared packages intact, and keeps server data by default. Add `--purge-data` only when you also want those preserved VPN configuration directories removed after backup.
 
-* • If you can't log in to the VPS, use the SSH port
-* • 22, 2253
-
-### 5. MENU, INFO ,UPDATE ,FIX
-* to main menu
-```html
-menu
-```
-* for menu updates and info updates
-```html
-updatemenu
-```
-* UDP Custom manager
-```html
-udp-custom-menu
-```
-* Remove managed VPN services and script files (configuration is backed up first)
-```html
-uninstall-vpn
-```
-* Automatically fix SSLH, WS-TLS errors
-```html
-sl-fix
-```
-```html
-reboot
-```
-* Fix SSL ERROR
-* automatically to fix SSL/TLS Certificate errors and SUBDOMAIN
-* fix error in acme domain section
-* to update SSL/TLS certificates
-```html
-slhost && certv2ray
-```
-* lalu restart
-```html
-restart
-```
-*
-*
-*
-
-### 6. FIX ERROR SSLH WS
-# Auto Fix Error SSLH + WS-TLS 443
-* 1 • If an error occurs in SSLH and SSH WS-TLS, use this script to fix it
-```html
-menu
- ```
-
-* 2 • in the menu then select 17 (SL-FIX Menu)
-```html
-17
- ```
-
-* 3 • if it's finished then reboot / restart the vps
-```html
-reboot
- ```
-
-### 7. Info Websocket
-* Websocket must use a subdomain/domain and already pointed at cloudflare (CDN CLOUDFLARE)
-* Without a subdomain/domain it's impossible to connect with bugs originating from cloudflare
-*
-*
-*
-
-### 8. Edit Port SSL WS or Change Port SSL (Manual)
-* change the port you want to change, if it's 443, please change the existing text to 443
-* after editing then save (CTRL+X+Y and enter)
-
-```html
-nano /etc/systemd/system/ws-tls.service
- ```
-```html
-nano /usr/local/bin/ws-tls
- ```
-```html
-nano /etc/default/sslh
- ```
-```html
-nano /etc/stunnel5/stunnel5.conf
- ```
-
-### 100 (Fix manually) Fix SSLH Error
-
-* Fix SSLH errors on VPS that don't support SSLH
-* especially those whose VPS does not support SSLH
-* turn off ws-tls
-```html
-systemctl stop ws-tls
-```
-* create user sslh / edit passwd
-```html
-echo sslh:x:109:114::/nonexistent:/usr/sbin/nologin >> /etc/passwd
-```
-* note: edit the passwd and move the sslh above vnstat
-
-* start sslh and run
-```html
-systemctl start sslh
-/etc/init.d/sslh start
-/etc/init.d/sslh restart
-```
-* lalu start ws-tls
-```html
-systemctl start ws-tls
-```
-```html
-reboot
-```
-*done
-
-
-
-# Special INFO SlowDNS
-• SSH Over DNS (SlowDNS)
-* the speed is limited
-* download speed 4 Mbps (Max Speed)
-* Support all ssh ports
-
-
-### Os Supported
-```
-• Debian 11, 10, 9
-• Ubuntu 18.04, 20.04
-
-# Service & Port
-• SlowDNS                   : All Port SSH
-• OpenSSH                   : 22, 2253
-• Dropbear                  : 443, 109, 143, 1153
-• Stunnel5                  : 443, 445, 777
-• OpenVPN                   : TCP 1194, UDP 2200, SSL 990 [OFF]
-• Websocket SSH TLS         : 443
-• Websocket SSH HTTP        : 8880
-• Websocket OpenVPN         : 2086 [OFF]
-• Squid Proxy               : 3128, 8000 [OFF]
-• Badvpn                    : 7100, 7200, 7300
-• Nginx                     : 89
-• Wireguard                 : 7070
-• L2TP/IPSEC VPN            : 1701
-• PPTP VPN                  : 1732
-• SSTP VPN                  : 444
-• Shadowsocks-R             : 1443-1543
-• SS-OBFS TLS               : 2443-2543
-• SS-OBFS HTTP              : 3443-3543
-• XRAYS Vmess TLS           : 8443
-• XRAYS Vmess None TLS      : 80
-• XRAYS Vless TLS           : 8443
-• XRAYS Vless None TLS      : 80
-• XRAYS Trojan              : 2083
-• XRAYS Vmess GRPC TLS      : 1180,3380 [OFF]
-• XRAYS Vless GRPC TLS      : 2280,4480 [OFF]
-• OHP SSH                   : 8181 
-• OHP Dropbear              : 8282
-• OHP OpenVPN               : 8383 [OFF]
-• Trojan Go                 : 2087
-• CloudFront Over Websocket : [OFF]
-
-
- ### Server Information & Other Features
-• Timezone                : Asia/Kuala_Lumpur (GMT +8)
-• Fail2Ban                : [ON]
-• Dflate                  : [ON]
-• IPtables                : [ON]
-• Auto-Reboot             : [ON]
-• IPv6                    : [OFF]
-• Autoreboot On 05.00 GMT +8
-• Auto Delete Expired Account
-• Full Orders For Various Services
-• White Label
-• Auto Fix
-• Auto Update
-```
-<p align="center">
-
-</p>
-<div height='45' align="center">
-
-<h2 align="center">

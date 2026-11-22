@@ -1,18 +1,27 @@
 #!/bin/bash
-PROJECT_CONFIG_FILE="${PROJECT_CONFIG_FILE:-/etc/ssh-one/config.env}"
-if [ -r "$PROJECT_CONFIG_FILE" ]; then
-    # shellcheck disable=SC1090
-    . "$PROJECT_CONFIG_FILE"
+
+# Load settings from the one installed config file or this source tree.
+if [ -r /etc/ssh-one/config.env ]; then . /etc/ssh-one/config.env
+else
+  _PROJECT_SCRIPT_DIR="$(cd "$(dirname "$0")" 2>/dev/null && pwd)"
+  for _PROJECT_ENV in "$_PROJECT_SCRIPT_DIR/config.env" "$_PROJECT_SCRIPT_DIR/../config.env"; do
+    if [ -r "$_PROJECT_ENV" ]; then . "$_PROJECT_ENV"; break; fi
+  done
 fi
-PROJECT_GITHUB_OWNER="${PROJECT_GITHUB_OWNER:-Phechr-2025}"
-PROJECT_GITHUB_REPO="${PROJECT_GITHUB_REPO:-SSH-xone}"
-PROJECT_GITHUB_BRANCH="${PROJECT_GITHUB_BRANCH:-main}"
-PROJECT_RAW_BASE_URL="${PROJECT_RAW_BASE_URL:-https://raw.githubusercontent.com/${PROJECT_GITHUB_OWNER}/${PROJECT_GITHUB_REPO}/${PROJECT_GITHUB_BRANCH}}"
-PROJECT_RAW_HOST="${PROJECT_RAW_BASE_URL#https://}"
-PROJECT_REPOSITORY_URL="${PROJECT_REPOSITORY_URL:-https://github.com/${PROJECT_GITHUB_OWNER}/${PROJECT_GITHUB_REPO}}"
+PROJECT_OWNER="${PROJECT_GITHUB_OWNER:-Phechr-2025}"
+PROJECT_NAME="${PROJECT_GITHUB_REPO:-SSH-xone}"
+PROJECT_BRANCH="${PROJECT_GITHUB_BRANCH:-main}"
+PROJECT_DISPLAY_NAME="${PROJECT_BRAND:-$PROJECT_OWNER}"
+PROJECT_DOMAIN="${PROJECT_CLOUDFLARE_DOMAIN:-}"
+PROJECT_CF_EMAIL="${PROJECT_CLOUDFLARE_EMAIL:-}"
+PROJECT_CF_KEY="${PROJECT_CLOUDFLARE_API_KEY:-}"
+PROJECT_RAW_URL="${PROJECT_RAW_BASE_URL:-https://raw.githubusercontent.com/${PROJECT_OWNER}/${PROJECT_NAME}/${PROJECT_BRANCH}}"
+export PROJECT_OWNER PROJECT_NAME PROJECT_BRANCH PROJECT_DISPLAY_NAME PROJECT_DOMAIN PROJECT_CF_EMAIL PROJECT_CF_KEY PROJECT_RAW_URL
 # Debian 9 & 10 64bit
 # Ubuntu 18.04 & 20.04 bit
 # Centos 7 & 8 64bit 
+# Mod By ${PROJECT_OWNER:-SSH-one}
+# By ${PROJECT_OWNER:-SSH-one}
 # ==========================================
 # Color
 RED='\033[0;31m'
@@ -40,7 +49,7 @@ exit 0
 fi
 # ==================================================
 # Link Hosting Kalian
-akbarvpn="${PROJECT_RAW_HOST}/ipsec"
+akbarvpn="raw.githubusercontent.com/${PROJECT_OWNER}/${PROJECT_NAME}/${PROJECT_BRANCH}/ipsec"
 
 VPN_IPSEC_PSK='myvpn'
 NET_IFACE=$(ip -o $NET_IFACE -4 route show to default | awk '{print $5}');
@@ -60,7 +69,7 @@ PUBLIC_IP=$(wget -qO- ipinfo.io/ip);
 
 bigecho "Installing packages required for the VPN..."
 if [[ ${OS} == "centos" ]]; then
-epel_url="${ADDONS_RELEASE_BASE_URL}/epelV9/epel-release-latest-9.noarch.rpm -E '%{rhel}').noarch.rpm"
+epel_url="https://github.com/NevermoreSSH/addons/releases/download/epelV9/epel-release-latest-9.noarch.rpm -E '%{rhel}').noarch.rpm"
 yum -y install epel-release || yum -y install "$epel_url" 
 
 bigecho "Installing packages required for the VPN..."
@@ -94,8 +103,8 @@ bigecho "Compiling and installing Libreswan..."
 
 SWAN_VER=3.32
 swan_file="libreswan-3.32.tar.gz"
-swan_url1="${ADDONS_RELEASE_BASE_URL}/libreswan-3.32/libreswan-3.32.tar.gz"
-swan_url2="${ADDONS_RELEASE_BASE_URL}/libreswan-3.32/libreswan-3.32.tar.gz"
+swan_url1="https://github.com/NevermoreSSH/addons/releases/download/libreswan-3.32/libreswan-3.32.tar.gz"
+swan_url2="https://github.com/NevermoreSSH/addons/releases/download/libreswan-3.32/libreswan-3.32.tar.gz"
 if ! { wget -t 3 -T 30 -nv -O "$swan_file" "$swan_url1" || wget -t 3 -T 30 -nv -O "$swan_file" "$swan_url2"; }; then
   exit 1
 fi

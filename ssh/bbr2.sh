@@ -1,16 +1,4 @@
 #!/bin/bash
-PROJECT_CONFIG_FILE="${PROJECT_CONFIG_FILE:-/etc/ssh-one/config.env}"
-if [ -r "$PROJECT_CONFIG_FILE" ]; then
-    # shellcheck disable=SC1090
-    . "$PROJECT_CONFIG_FILE"
-fi
-PROJECT_GITHUB_OWNER="${PROJECT_GITHUB_OWNER:-Phechr-2025}"
-PROJECT_GITHUB_REPO="${PROJECT_GITHUB_REPO:-SSH-xone}"
-PROJECT_GITHUB_BRANCH="${PROJECT_GITHUB_BRANCH:-main}"
-PROJECT_RAW_BASE_URL="${PROJECT_RAW_BASE_URL:-https://raw.githubusercontent.com/${PROJECT_GITHUB_OWNER}/${PROJECT_GITHUB_REPO}/${PROJECT_GITHUB_BRANCH}}"
-PROJECT_RAW_HOST="${PROJECT_RAW_BASE_URL#https://}"
-PROJECT_REPOSITORY_URL="${PROJECT_REPOSITORY_URL:-https://github.com/${PROJECT_GITHUB_OWNER}/${PROJECT_GITHUB_REPO}}"
-PROJECT_BRAND="${PROJECT_BRAND:-SSH-one}"
 # //====================================================
 # //	System Request:Debian 9+/Ubuntu 18.04+/20+
 # //	Author:	bhoikfostyahya
@@ -84,8 +72,8 @@ remove_all
 echo "net.core.default_qdisc=fq" >>/etc/sysctl.conf
 echo "net.ipv4.tcp_congestion_control=bbrplus" >>/etc/sysctl.conf
 mkdir bbrplus && cd bbrplus
-wget -N --no-check-certificate ${BBRPLUS_RELEASE_BASE_URL}/bbr5.15/Debian-Ubuntu_Optional_linux-headers-5.15.96-bbrplus_5.15.96-bbrplus-1_amd64.deb >/dev/null 2>&1
-wget -N --no-check-certificate ${BBRPLUS_RELEASE_BASE_URL}/bbr5.15/Debian-Ubuntu_Required_linux-image-5.15.96-bbrplus_5.15.96-bbrplus-1_amd64.deb >/dev/null 2>&1
+wget -N --no-check-certificate https://github.com/NevermoreSSH/BBRplus/releases/download/bbr5.15/Debian-Ubuntu_Optional_linux-headers-5.15.96-bbrplus_5.15.96-bbrplus-1_amd64.deb >/dev/null 2>&1
+wget -N --no-check-certificate https://github.com/NevermoreSSH/BBRplus/releases/download/bbr5.15/Debian-Ubuntu_Required_linux-image-5.15.96-bbrplus_5.15.96-bbrplus-1_amd64.deb >/dev/null 2>&1
 dpkg -i Debian-Ubuntu_Optional_linux-headers-5.15.96-bbrplus_5.15.96-bbrplus-1_amd64.deb
 dpkg -i Debian-Ubuntu_Required_linux-image-5.15.96-bbrplus_5.15.96-bbrplus-1_amd64.deb
 cd .. && rm -rf bbrplus

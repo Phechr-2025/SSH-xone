@@ -1,16 +1,4 @@
 #!/bin/bash
-PROJECT_CONFIG_FILE="${PROJECT_CONFIG_FILE:-/etc/ssh-one/config.env}"
-if [ -r "$PROJECT_CONFIG_FILE" ]; then
-    # shellcheck disable=SC1090
-    . "$PROJECT_CONFIG_FILE"
-fi
-PROJECT_GITHUB_OWNER="${PROJECT_GITHUB_OWNER:-Phechr-2025}"
-PROJECT_GITHUB_REPO="${PROJECT_GITHUB_REPO:-SSH-xone}"
-PROJECT_GITHUB_BRANCH="${PROJECT_GITHUB_BRANCH:-main}"
-PROJECT_RAW_BASE_URL="${PROJECT_RAW_BASE_URL:-https://raw.githubusercontent.com/${PROJECT_GITHUB_OWNER}/${PROJECT_GITHUB_REPO}/${PROJECT_GITHUB_BRANCH}}"
-PROJECT_RAW_HOST="${PROJECT_RAW_BASE_URL#https://}"
-PROJECT_REPOSITORY_URL="${PROJECT_REPOSITORY_URL:-https://github.com/${PROJECT_GITHUB_OWNER}/${PROJECT_GITHUB_REPO}}"
-PROJECT_BRAND="${PROJECT_BRAND:-SSH-one}"
 #!/bin/bash
 clear
 m="\033[0;1;36m"
@@ -91,7 +79,7 @@ install-sldns && restart
 bbr2 && reboot
 ;;
 16)
-wget -q -O /usr/bin/xraychanger "${XRAY_CHANGER_BASE_URL}/xraychanger.sh" && chmod +x /usr/bin/xraychanger && xraychanger
+wget -q -O /usr/bin/xraychanger "https://raw.githubusercontent.com/NevermoreSSH/Xcore-custompath/main/xraychanger.sh" && chmod +x /usr/bin/xraychanger && xraychanger
 ;;
 17)
 nano /etc/issue.net
@@ -101,7 +89,7 @@ fssw
 ;;
 19)
 clear
-wget -q -O /usr/bin/swapram "${SWAPRAM_SCRIPT_URL}" && chmod +x /usr/bin/swapram && swapram
+wget -q -O /usr/bin/swapram "https://raw.githubusercontent.com/NevermoreSSH/swapram/main/swapram.sh" && chmod +x /usr/bin/swapram && swapram
 ;;
 20)
 clear

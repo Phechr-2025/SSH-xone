@@ -1,15 +1,22 @@
 #!/bin/bash
-PROJECT_CONFIG_FILE="${PROJECT_CONFIG_FILE:-/etc/ssh-one/config.env}"
-if [ -r "$PROJECT_CONFIG_FILE" ]; then
-	# shellcheck disable=SC1090
-	. "$PROJECT_CONFIG_FILE"
+
+# Load settings from the one installed config file or this source tree.
+if [ -r /etc/ssh-one/config.env ]; then . /etc/ssh-one/config.env
+else
+  _PROJECT_SCRIPT_DIR="$(cd "$(dirname "$0")" 2>/dev/null && pwd)"
+  for _PROJECT_ENV in "$_PROJECT_SCRIPT_DIR/config.env" "$_PROJECT_SCRIPT_DIR/../config.env"; do
+    if [ -r "$_PROJECT_ENV" ]; then . "$_PROJECT_ENV"; break; fi
+  done
 fi
-PROJECT_GITHUB_OWNER="${PROJECT_GITHUB_OWNER:-Phechr-2025}"
-PROJECT_GITHUB_REPO="${PROJECT_GITHUB_REPO:-SSH-xone}"
-PROJECT_GITHUB_BRANCH="${PROJECT_GITHUB_BRANCH:-main}"
-PROJECT_RAW_BASE_URL="${PROJECT_RAW_BASE_URL:-https://raw.githubusercontent.com/${PROJECT_GITHUB_OWNER}/${PROJECT_GITHUB_REPO}/${PROJECT_GITHUB_BRANCH}}"
-PROJECT_RAW_HOST="${PROJECT_RAW_BASE_URL#https://}"
-email="${PROJECT_CONTACT_EMAIL:-}"
+PROJECT_OWNER="${PROJECT_GITHUB_OWNER:-Phechr-2025}"
+PROJECT_NAME="${PROJECT_GITHUB_REPO:-SSH-xone}"
+PROJECT_BRANCH="${PROJECT_GITHUB_BRANCH:-main}"
+PROJECT_DISPLAY_NAME="${PROJECT_BRAND:-$PROJECT_OWNER}"
+PROJECT_DOMAIN="${PROJECT_CLOUDFLARE_DOMAIN:-}"
+PROJECT_CF_EMAIL="${PROJECT_CLOUDFLARE_EMAIL:-}"
+PROJECT_CF_KEY="${PROJECT_CLOUDFLARE_API_KEY:-}"
+PROJECT_RAW_URL="${PROJECT_RAW_BASE_URL:-https://raw.githubusercontent.com/${PROJECT_OWNER}/${PROJECT_NAME}/${PROJECT_BRANCH}}"
+export PROJECT_OWNER PROJECT_NAME PROJECT_BRANCH PROJECT_DISPLAY_NAME PROJECT_DOMAIN PROJECT_CF_EMAIL PROJECT_CF_KEY PROJECT_RAW_URL
 # ==========================================
 # Color
 RED='\033[0;31m'
@@ -28,16 +35,16 @@ MYIP=$(curl -sS ipv4.icanhazip.com)
 MYIP=$(curl -sS ifconfig.me )
 # ==================================================
 # Link Hosting Kalian
-akbarvpn="${PROJECT_RAW_HOST}/ssh"
+akbarvpn="raw.githubusercontent.com/${PROJECT_OWNER}/${PROJECT_NAME}/${PROJECT_BRANCH}/ssh"
 
 # Link Hosting Kalian Untuk Xray
-akbarvpnn="${PROJECT_RAW_HOST}/xray"
+akbarvpnn="raw.githubusercontent.com/${PROJECT_OWNER}/${PROJECT_NAME}/${PROJECT_BRANCH}/xray"
 
 # Link Hosting Kalian Untuk Trojan Go
-akbarvpnnn="${PROJECT_RAW_HOST}/trojango"
+akbarvpnnn="raw.githubusercontent.com/${PROJECT_OWNER}/${PROJECT_NAME}/${PROJECT_BRANCH}/trojango"
 
 # Link Hosting Kalian Untuk Stunnel5
-akbarvpnnnn="${PROJECT_RAW_HOST}/stunnel5"
+akbarvpnnnn="raw.githubusercontent.com/${PROJECT_OWNER}/${PROJECT_NAME}/${PROJECT_BRANCH}/stunnel5"
 
 # initializing var
 export DEBIAN_FRONTEND=noninteractive
@@ -54,6 +61,7 @@ locality=Kuala_Lumpur
 organization=none
 organizationalunit=none
 commonname=localhost
+email=${PROJECT_CF_EMAIL:-}
 
 # simple password minimal
 wget -O /etc/pam.d/common-password "https://${akbarvpn}/password"
@@ -244,7 +252,7 @@ systemctl restart sslh
 apt -y install vnstat
 /etc/init.d/vnstat restart
 apt -y install libsqlite3-dev
-wget ${ADDONS_RELEASE_BASE_URL}/vnstat-2.6/vnstat-2.6.tar.gz
+wget https://github.com/NevermoreSSH/addons/releases/download/vnstat-2.6/vnstat-2.6.tar.gz
 tar zxvf vnstat-2.6.tar.gz
 cd vnstat-2.6
 ./configure --prefix=/usr --sysconfdir=/etc && make && make install
@@ -393,9 +401,7 @@ wget -O dns "https://${akbarvpn}/dns.sh"
 wget -O netf "https://${akbarvpn}/netf.sh"
 wget -O bbr2 "https://${akbarvpn}/bbr2.sh"
 wget -O about "https://${akbarvpn}/about.sh"
-wget -O menu "${PROJECT_RAW_BASE_URL}/update/menu.sh"
-wget -O udp-custom-menu "${PROJECT_RAW_BASE_URL}/update/udp-custom-menu.sh"
-wget -O uninstall-vpn "${PROJECT_RAW_BASE_URL}/hapus/uninstall"
+wget -O menu "${PROJECT_RAW_URL}/update/menu.sh"
 wget -O addssh "https://${akbarvpn}/addssh.sh"
 wget -O trialssh "https://${akbarvpn}/trialssh.sh"
 wget -O delssh "https://${akbarvpn}/delssh.sh"
@@ -442,32 +448,32 @@ wget -O addtrgo "https://${akbarvpnnn}/addtrgo.sh"
 wget -O deltrgo "https://${akbarvpnnn}/deltrgo.sh"
 wget -O renewtrgo "https://${akbarvpnnn}/renewtrgo.sh"
 wget -O cektrgo "https://${akbarvpnnn}/cektrgo.sh"
-wget -O portsshnontls "${PROJECT_RAW_BASE_URL}/websocket/portsshnontls.sh"
-wget -O portsshws "${PROJECT_RAW_BASE_URL}/websocket/portsshws.sh"
+wget -O portsshnontls "${PROJECT_RAW_URL}/websocket/portsshnontls.sh"
+wget -O portsshws "${PROJECT_RAW_URL}/websocket/portsshws.sh"
 wget -O userv2ray "https://${akbarvpnn}/userv2ray.sh"
 wget -O uservless "https://${akbarvpnn}/uservless.sh"
 
-wget -O ipsaya "${PROJECT_RAW_BASE_URL}/update/ipsaya.sh"
-wget -O sshovpnmenu "${PROJECT_RAW_BASE_URL}/update/sshovpn.sh"
-wget -O l2tpmenu "${PROJECT_RAW_BASE_URL}/update/l2tpmenu.sh"
-wget -O pptpmenu "${PROJECT_RAW_BASE_URL}/update/pptpmenu.sh"
-wget -O sstpmenu "${PROJECT_RAW_BASE_URL}/update/sstpmenu.sh"
-wget -O wgmenu "${PROJECT_RAW_BASE_URL}/update/wgmenu.sh"
-wget -O ssmenu "${PROJECT_RAW_BASE_URL}/update/ssmenu.sh"
-wget -O ssrmenu "${PROJECT_RAW_BASE_URL}/update/ssrmenu.sh"
-wget -O vmessmenu "${PROJECT_RAW_BASE_URL}/update/vmessmenu.sh"
-wget -O vlessmenu "${PROJECT_RAW_BASE_URL}/update/vlessmenu.sh"
-wget -O grpcmenu "${PROJECT_RAW_BASE_URL}/update/grpcmenu.sh"
-wget -O grpcupdate "${PROJECT_RAW_BASE_URL}/update/grpcupdate.sh"
-wget -O trmenu "${PROJECT_RAW_BASE_URL}/update/trmenu.sh"
-wget -O trgomenu "${PROJECT_RAW_BASE_URL}/update/trgomenu.sh"
-wget -O setmenu "${PROJECT_RAW_BASE_URL}/update/setmenu.sh"
-wget -O slowdnsmenu "${PROJECT_RAW_BASE_URL}/update/slowdnsmenu.sh"
-wget -O running "${PROJECT_RAW_BASE_URL}/update/running.sh"
-wget -O updatemenu "${PROJECT_RAW_BASE_URL}/update/updatemenu.sh"
-wget -O sl-fix "${PROJECT_RAW_BASE_URL}/sslh-fix/sl-fix"
-wget -O install-sldns "${PROJECT_RAW_BASE_URL}/SLDNS/install-sldns"
-wget -O fssw "${SLOWDNS_RAW_BASE_URL}/fssw/fssw.sh"
+wget -O ipsaya "${PROJECT_RAW_URL}/update/ipsaya.sh"
+wget -O sshovpnmenu "${PROJECT_RAW_URL}/update/sshovpn.sh"
+wget -O l2tpmenu "${PROJECT_RAW_URL}/update/l2tpmenu.sh"
+wget -O pptpmenu "${PROJECT_RAW_URL}/update/pptpmenu.sh"
+wget -O sstpmenu "${PROJECT_RAW_URL}/update/sstpmenu.sh"
+wget -O wgmenu "${PROJECT_RAW_URL}/update/wgmenu.sh"
+wget -O ssmenu "${PROJECT_RAW_URL}/update/ssmenu.sh"
+wget -O ssrmenu "${PROJECT_RAW_URL}/update/ssrmenu.sh"
+wget -O vmessmenu "${PROJECT_RAW_URL}/update/vmessmenu.sh"
+wget -O vlessmenu "${PROJECT_RAW_URL}/update/vlessmenu.sh"
+wget -O grpcmenu "${PROJECT_RAW_URL}/update/grpcmenu.sh"
+wget -O grpcupdate "${PROJECT_RAW_URL}/update/grpcupdate.sh"
+wget -O trmenu "${PROJECT_RAW_URL}/update/trmenu.sh"
+wget -O trgomenu "${PROJECT_RAW_URL}/update/trgomenu.sh"
+wget -O setmenu "${PROJECT_RAW_URL}/update/setmenu.sh"
+wget -O slowdnsmenu "${PROJECT_RAW_URL}/update/slowdnsmenu.sh"
+wget -O running "${PROJECT_RAW_URL}/update/running.sh"
+wget -O updatemenu "${PROJECT_RAW_URL}/update/updatemenu.sh"
+wget -O sl-fix "${PROJECT_RAW_URL}/sslh-fix/sl-fix"
+wget -O install-sldns "${PROJECT_RAW_URL}/SLDNS/install-sldns"
+wget -O fssw "https://raw.githubusercontent.com/NevermoreSSH/hopp/main/fssw/fssw.sh"
 
 chmod +x sl-fix
 chmod +x fssw
@@ -501,8 +507,6 @@ chmod +x dns
 chmod +x netf
 chmod +x bbr2
 chmod +x menu
-chmod +x udp-custom-menu
-chmod +x uninstall-vpn
 chmod +x addssh
 chmod +x trialssh
 chmod +x delssh
