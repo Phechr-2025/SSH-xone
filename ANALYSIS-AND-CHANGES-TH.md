@@ -9,13 +9,13 @@
 ## สิ่งที่ทำตามข้อกำหนด
 
 1. เพิ่มบริการ UDP Custom โดยรวมไบนารี Linux amd64 และ `config.json` ที่ใช้ในต้นทาง พร้อมสคริปต์ติดตั้งและ unit `udp-custom.service`
-2. สร้าง UDP menu สำหรับติดตั้ง/ซ่อม, start, stop, restart, ดูสถานะ และถอน UDP โดยสำรอง `config.json` ก่อนซ่อม และให้เลือกเก็บหรือลบ config ตอนถอน
+2. เชื่อม UDP account manager ของ repository ปลายทางเข้ากับเมนูหลัก: ติดตั้ง/อัปเดต, เพิ่ม/ดู/ต่ออายุ/ลบบัญชี, ดูข้อมูลเชื่อมต่อ, ควบคุมบริการ และถอนติดตั้ง
 3. จัดเมนูหลักใหม่ครบ 25 รายการตามลำดับที่ขอ เพิ่ม UDP เป็นข้อ 1 และเพิ่ม Version ใน server information
 4. เปลี่ยนบรรทัดเครดิตบนเมนูเป็นชื่อจาก `PROJECT_BRAND` ซึ่งตั้งค่าเริ่มต้นจาก `PROJECT_GITHUB_OWNER`
 5. ข้อ 17 ใช้ชื่อ `UPDATE SSH / MENU (Update)` เพื่อรวมคำขอ `UPDATE SSH` และ `UPDATE MENU` ที่ระบุเลข 17 ซ้ำกัน ตัวอัปเดตดาวน์โหลด archive ทั้ง repository จาก owner/repository/branch ใน config, ตรวจว่ามีไฟล์หลัก และเก็บชุดเดิมไว้เป็น `/opt/<PROJECT_NAME>.previous` พร้อมผูกคำสั่ง `updatemenu`
 6. ใช้ `config.env` เดิมของ repository เป็นจุดแก้ owner, repository, branch, ชื่อแสดงผล, domain และ Cloudflare email/key พร้อมเปลี่ยน URL ของไฟล์ `hop` ภายในให้สร้างจากค่ากลาง
 7. ทำตัวถอนติดตั้งแบบยืนยันคำว่า `REMOVE`, สำรองข้อมูลก่อน, หยุดและถอด unit ที่รู้จัก, เอาคำสั่งเมนูออก และคงบัญชี Linux/แพ็กเกจ/config ไว้ตามค่าเริ่มต้น ใช้ `--purge-data` เพื่อลบข้อมูล config หลังสำรอง
-8. เพิ่มตัวนับ UDP แยกจาก SSH ในแถวสรุป (แสดง 0 เพราะ UDP Custom เป็นบริการร่วม ไม่ได้มีรายการบัญชีผู้ใช้)
+8. เพิ่มตัวนับ UDP แยกจาก SSH ในแถวสรุป โดยนับ Linux users ในกลุ่ม UDP Custom แยกต่างหาก
 9. แสดง short commit SHA จาก GitHub API ใน Version บนเมนู
 10. เพิ่ม `install.sh` สำหรับ Debian 9/10/11 และ Ubuntu 18.04/20.04 และตัวอย่างคำสั่งติดตั้งที่วางครั้งเดียวใน README
 11. เปลี่ยน `backup/rclone.conf` เป็น template ว่าง หลังพบ OAuth access/refresh token ฝังอยู่ในไฟล์เดิม

@@ -21,11 +21,11 @@ The repository must contain `config.env` and the scripts before running the comm
 
 ## UDP Custom
 
-UDP Custom is provided as a separate service menu (`udp-menu`) and is also available from the main menu. The install uses the binary and default `config.json` bundled under `udp/`, creates `udp-custom.service`, enables it at boot, and keeps the existing configuration with a timestamped backup during repair. The service configuration follows the `udp-custom server` layout used by the referenced scripts. To remove it, select option 6 in the UDP menu; the remover asks whether to keep `/root/udp/config.json` and backups.
+UDP Custom is provided as a separate service and account menu (`udp-menu`) and is also available from the main menu. It supports install/update, add/list/renew/delete accounts, connection information, service controls, and uninstall. Configure asset URLs, root directory, service name, group, and default listen port in `config.env`.
 
 Review firewall rules and `udp/config.json` for the ports and behavior you intend to expose. The bundled third-party UDP executable is a prebuilt Linux amd64 binary and will not run on ARM or other architectures.
 
 ## Uninstall
 
-Use `udp-menu` → `6` to remove only UDP Custom, or run `uninstall-project` for the full script suite. The full remover asks for an explicit `REMOVE`, creates a timestamped archive under `/root`, leaves Linux accounts and shared packages intact, and keeps server data by default. Add `--purge-data` only when you also want those preserved VPN configuration directories removed after backup.
+Use `udp-menu` → `11` to remove UDP Custom, or run `uninstall-project` for the full script suite. The full remover asks for an explicit `REMOVE`, creates a timestamped archive under `/root`, leaves Linux accounts and shared packages intact, and keeps server data by default. Add `--purge-data` only when you also want those preserved VPN configuration directories removed after backup.
 

@@ -21,7 +21,7 @@ services=(udp-custom ws-tls ws-nontls ws-ovpn sslh stunnel5 trojan-go xray ssrmu
 for service in "${services[@]}"; do systemctl disable --now "$service" 2>/dev/null || true; done
 for service in "${services[@]}"; do rm -f "/etc/systemd/system/${service}.service"; done
 systemctl daemon-reload
-for command in menu udp-menu updatemenu updateall uninstall-project; do
+for command in menu udp-menu udp-custom-menu updatemenu updateall uninstall-project; do
   path="/usr/bin/$command"
   if [[ -L "$path" ]] && [[ "$(readlink -f "$path")" == "$PROJECT_ROOT"/* ]]; then rm -f "$path"; fi
 done

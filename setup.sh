@@ -146,11 +146,10 @@ systemctl enable autosett
 wget -O /etc/set.sh "https://${akbarvpn}/set.sh"
 chmod +x /etc/set.sh
 history -c
-# Install the UDP Custom service using the bundled VVV-derived config and binary.
-bash "$SETUP_ROOT/udp/install.sh"
-install -d -m 0755 "/etc/${PROJECT_NAME}"
+# Install UDP Custom through the account-aware VVV-style manager.
 install -d -m 0755 "$PROJECT_CONFIG_DIR"
 install -m 0600 "$SETUP_ROOT/config.env" "$PROJECT_CONFIG"
+bash "$SETUP_ROOT/update/udp-custom-menu.sh" install
 printf '%s\n' "$(project_version)" > "$PROJECT_VERSION_FILE"
 echo " "
 echo "Installation has been completed!!"echo " "

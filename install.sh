@@ -21,9 +21,10 @@ fi
 install -d "$PROJECT_ROOT"
 cp -a "$src/." "$PROJECT_ROOT/"
 install -m 0600 "$PROJECT_ROOT/config.env" "$PROJECT_CONFIG"
-chmod +x "$PROJECT_ROOT/setup.sh" "$PROJECT_ROOT/update-all.sh" "$PROJECT_ROOT/uninstall.sh" "$PROJECT_ROOT/udp/"*.sh "$PROJECT_ROOT/update/menu.sh"
+chmod +x "$PROJECT_ROOT/setup.sh" "$PROJECT_ROOT/update-all.sh" "$PROJECT_ROOT/uninstall.sh" "$PROJECT_ROOT/udp/"*.sh "$PROJECT_ROOT/update/menu.sh" "$PROJECT_ROOT/update/udp-custom-menu.sh"
 ln -sfn "$PROJECT_ROOT/update/menu.sh" /usr/bin/menu
 ln -sfn "$PROJECT_ROOT/udp/menu.sh" /usr/bin/udp-menu
+ln -sfn "$PROJECT_ROOT/update/udp-custom-menu.sh" /usr/bin/udp-custom-menu
 ln -sfn "$PROJECT_ROOT/update-all.sh" /usr/bin/updateall
 ln -sfn "$PROJECT_ROOT/uninstall.sh" /usr/bin/uninstall-project
 ln -sfn /usr/bin/updateall /usr/bin/updatemenu

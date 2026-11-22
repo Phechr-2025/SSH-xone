@@ -26,9 +26,10 @@ printf '%s\n' "${commit:0:7}" > "$PROJECT_VERSION_FILE"
 for f in menu udp-menu updateall; do :; done
 ln -sfn "$PROJECT_ROOT/update/menu.sh" /usr/bin/menu
 ln -sfn "$PROJECT_ROOT/udp/menu.sh" /usr/bin/udp-menu
+ln -sfn "$PROJECT_ROOT/update/udp-custom-menu.sh" /usr/bin/udp-custom-menu
 ln -sfn "$PROJECT_ROOT/update-all.sh" /usr/bin/updateall
 ln -sfn "$PROJECT_ROOT/uninstall.sh" /usr/bin/uninstall-project
 ln -sfn /usr/bin/updateall /usr/bin/updatemenu
-chmod +x "$PROJECT_ROOT/update/menu.sh" "$PROJECT_ROOT/udp/"*.sh "$PROJECT_ROOT/update-all.sh"
+chmod +x "$PROJECT_ROOT/update/menu.sh" "$PROJECT_ROOT/update/udp-custom-menu.sh" "$PROJECT_ROOT/udp/"*.sh "$PROJECT_ROOT/update-all.sh"
 chmod +x "$PROJECT_ROOT/uninstall.sh"
 echo "Updated all project files from ${PROJECT_OWNER}/${PROJECT_NAME}. Previous version: $old"

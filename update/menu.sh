@@ -20,7 +20,10 @@ vmess_count="$(count_users /etc/xray/config.json '^### ')"
 vless_count="$(count_users /etc/xray/config.json '^#### ')"
 trojan_count="$(count_users /etc/xray/config.json '^#&# ')"
 trojango_count="$(count_users /etc/trojan-go/akun.conf '^### ')"
-udp_count=0 # UDP Custom is a shared service, not a per-user account list.
+udp_group="${UDP_CUSTOM_GROUP:-udp-custom}"
+udp_gid="$(getent group "$udp_group" 2>/dev/null | awk -F: 'NR==1 {print $3}')"
+udp_count=0
+if [[ -n "$udp_gid" ]]; then udp_count="$(getent passwd | awk -F: -v gid="$udp_gid" '$4==gid {n++} END {print n+0}')"; fi
 usage="N/A"; yesterday="N/A"; monthly="N/A"
 if cmd vnstat; then
   iface="$(ip -o route show default 2>/dev/null | awk 'NR==1 {print $5}')"
@@ -69,7 +72,7 @@ cat <<'MENU'
 MENU
 read -r -p 'Select From Options [ 1 - 25 ] : ' choice
 case "$choice" in
-  1) exec bash "$ROOT/udp/menu.sh" ;;
+  1) exec bash "$ROOT/update/udp-custom-menu.sh" ;;
   2) sshovpnmenu ;;
   3) l2tpmenu ;;
   4) pptpmenu ;;
